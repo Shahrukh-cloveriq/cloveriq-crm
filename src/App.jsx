@@ -440,7 +440,7 @@ export default function App(){
     const recentActs=[...activities].filter(a=>a.contact_id===aiContact.id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,2).map(a=>`${a.type} on ${a.date}: ${a.note}`).join("; ")||"No previous contact";
     const prompt=`You are an expert B2B sales copywriter for Clover IQ.\n\nCOMPANY CONTEXT:\n${CLOVER_IQ_CONTEXT}\n\nCONTACT:\n- Name: ${aiContact.name}\n- Title: ${aiContact.title||"Unknown"}\n- Company: ${org?.name||"Their company"}\n- Industry: ${org?.industry||"Technology"}\n- Source: ${aiContact.source}\n- Stage: ${aiContact.stage}\n- Notes: ${aiContact.notes||"None"}\n- Recent activity: ${recentActs}\n\nICP: ${icp.title}\nPain points: ${icp.painPoints}\nValue props: ${icp.valueProps}\n\nSEQUENCE STEP: ${aiStep}\nCHANNEL: ${aiChannel}\nRULES: Direct and concise. No fluff. Personalize using their name, company, notes. One clear CTA.\nOutput ONLY valid JSON: {"subject":"...","body":"...","whatsapp":"...","linkedin":"..."}`;
     try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+     const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
       const data=await res.json();
       const raw=data.content?.find(b=>b.type==="text")?.text||"";
       setAiOutput(JSON.parse(raw.replace(/```json|```/g,"").trim()));
